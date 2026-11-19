@@ -1,6 +1,14 @@
 name: Publish
 on:
   workflow_dispatch:
+    inputs:
+      mode:
+        description: Publish directly with trusted publishing, or stage the initial package
+        type: choice
+        default: publish
+        options:
+          - publish
+          - stage
 permissions:
   contents: read
   id-token: write
@@ -22,7 +30,14 @@ jobs:
         run: |
           status=$(curl --silent --output /dev/null --write-out '%{http_code}' https://api.webdecoy.com/api/automation/v1/connection)
           test "$status" = 401
+      - name: Stage bootstrap release with provenance
+        if: inputs.mode == 'stage'
+        run: npm stage publish --access public --provenance
+        env:
+          RELEASE_MODE: 'true'
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Publish with n8n CLI and provenance
+        if: inputs.mode == 'publish'
         run: npm run release
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
