@@ -1,5 +1,6 @@
 import {
 	NodeConnectionTypes,
+	sleep,
 	NodeOperationError,
 	NodeApiError,
 	type JsonObject,
@@ -86,7 +87,7 @@ export class Webdecoy implements INodeType {
 				type: 'boolean',
 				default: false,
 				displayOptions: { show: search },
-				description: 'Whether to return all matching events in the selected time window',
+				description: 'Whether to return all results or only up to a given limit',
 			},
 			{
 				displayName: 'Limit',
@@ -271,7 +272,7 @@ export class Webdecoy implements INodeType {
 						}
 						cursors.add(cursor);
 						qs.cursor = cursor;
-						await new Promise((resolve) => setTimeout(resolve, 1000));
+						await sleep(1000);
 					} while (received < limit);
 					output.push(...events);
 				} else {
