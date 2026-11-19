@@ -2,7 +2,7 @@
 
 Read AI and bot detection events and actor evidence from WebDecoy, then route useful findings into your existing workflows.
 
-**Unreleased:** this package requires the new WebDecoy Automation Read API. Source is available for review; npm publication and n8n verification will follow backend deployment. It is not currently discoverable in n8n's Add step panel.
+**Release candidate:** the Automation Read API is deployed and the integration passed a live production smoke test in n8n 2.48.5. npm publication and n8n verification are pending. It is not currently discoverable in n8n's Add step panel.
 
 ## What it does
 
@@ -27,7 +27,7 @@ For self-hosted n8n, install `n8n-nodes-webdecoy` through **Settings → Communi
 
 ## Example: a bot activity digest in Slack
 
-Import [`examples/bot-activity-slack.json`](examples/bot-activity-slack.json), select your WebDecoy and Slack credentials, and choose a Slack channel. Test it manually, then enable the schedule.
+Import the [Slack digest workflow](https://github.com/WebDecoy/n8n-nodes-webdecoy/blob/main/examples/bot-activity-slack.json), select your WebDecoy and Slack credentials, and choose a Slack channel. Test it manually, then enable the schedule.
 
 Every 15 minutes the workflow fetches up to 100 detections scoring at least 70 from a fixed previous 15-minute window. A Code node groups them into one count and a link to review evidence; Slack receives one digest if there are matches. No per-event content is interpolated into Slack markup. The workflow is inactive on import and contains no credentials.
 
@@ -54,7 +54,9 @@ The programmatic node holds one time window across dependent cursor requests, en
 
 Created with the official `@n8n/node-cli`. The distributed node has no runtime dependencies, filesystem access or environment-variable access. Development tests run the compiled node against a local HTTP fixture; backend integration tests separately exercise actual authorization and database queries. They do not measure bot-detection accuracy or claim production alert delivery.
 
-Publishing uses GitHub Actions with npm provenance. Configure the repository's npm trusted publisher for `publish.yml` before the first release. Do not publish until the Automation Read API is deployed and a real credential smoke test passes.
+Production smoke test (November 19, 2026): the real n8n credential test passed, and a webhook workflow fetched three production detections followed by 20 evidence events for an actor returned by those detections. API pagination, site scope and validation checks also passed. The temporary read-only key was revoked and confirmed to return HTTP 401 afterward.
+
+Publishing uses the official n8n CLI in GitHub Actions with npm provenance. Configure an npm trusted publisher for repository `WebDecoy/n8n-nodes-webdecoy`, workflow `publish.yml`, environment `npm`. A temporary `NPM_TOKEN` GitHub secret can bootstrap the first package publication; remove it after trusted publishing is configured.
 
 [WebDecoy](https://webdecoy.com) · [Documentation](https://docs.webdecoy.com) · [Issues](https://github.com/WebDecoy/n8n-nodes-webdecoy/issues)
 

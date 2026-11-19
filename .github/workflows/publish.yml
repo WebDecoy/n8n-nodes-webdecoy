@@ -9,11 +9,12 @@ jobs:
     runs-on: ubuntu-latest
     environment: npm
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: '24'
-          cache: npm
+          registry-url: 'https://registry.npmjs.org'
+          package-manager-cache: false
       - run: npm ci
       - run: npm run lint
       - run: npm test
@@ -21,4 +22,7 @@ jobs:
         run: |
           status=$(curl --silent --output /dev/null --write-out '%{http_code}' https://api.webdecoy.com/api/automation/v1/connection)
           test "$status" = 401
-      - run: npm publish --access public --provenance
+      - name: Publish with n8n CLI and provenance
+        run: npm run release
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
