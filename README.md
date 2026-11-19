@@ -2,8 +2,6 @@
 
 Read AI and bot detection events and actor evidence from WebDecoy, then route useful findings into your existing workflows.
 
-**Release candidate:** the Automation Read API is deployed and the integration passed a live production smoke test in n8n 2.48.5. npm publication and n8n verification are pending. It is not currently discoverable in n8n's Add step panel.
-
 ## What it does
 
 - **Detection → Get Many:** fetch recent site events, filter by score/category/actor and paginate up to your chosen limit.
@@ -21,9 +19,9 @@ Requires a WebDecoy account and a reporting site. In WebDecoy's **API Keys** pag
 
 The key stays in n8n credentials. Do not paste it into workflow parameters or exported JSON. Default ingestion keys, dashboard JWTs, expired keys and revoked keys cannot be used for these reads. Use a separate credential for each site.
 
-## Installation after release
+## Installation
 
-For self-hosted n8n, install `n8n-nodes-webdecoy` through **Settings → Community nodes**, following [n8n's community-node installation guide](https://docs.n8n.io/integrations/community-nodes/installation/). Availability on n8n Cloud requires n8n verification, which has not yet been submitted or granted.
+For self-hosted n8n, install `n8n-nodes-webdecoy` through **Settings → Community nodes**, following [n8n's community-node installation guide](https://docs.n8n.io/integrations/community-nodes/installation/). Availability on n8n Cloud requires verification by n8n.
 
 ## Example: a bot activity digest in Slack
 
@@ -56,7 +54,7 @@ Created with the official `@n8n/node-cli`. The distributed node has no runtime d
 
 Production smoke test (November 19, 2026): the real n8n credential test passed, and a webhook workflow fetched three production detections followed by 20 evidence events for an actor returned by those detections. API pagination, site scope and validation checks also passed. The temporary read-only key was revoked and confirmed to return HTTP 401 afterward.
 
-Publishing uses the official n8n CLI in GitHub Actions with npm provenance. Configure an npm trusted publisher for repository `WebDecoy/n8n-nodes-webdecoy`, workflow `publish.yml`, environment `npm`. A temporary `NPM_TOKEN` GitHub secret can bootstrap the first package publication; remove it after trusted publishing is configured.
+Publishing uses the official n8n CLI in GitHub Actions with npm provenance and token-free OIDC authentication. The trusted publisher is repository `WebDecoy/n8n-nodes-webdecoy`, workflow `publish.yml`, environment `npm`. Dispatch the workflow with mode `publish` for a release or `stage` for a staged candidate.
 
 [WebDecoy](https://webdecoy.com) · [Documentation](https://docs.webdecoy.com) · [Issues](https://github.com/WebDecoy/n8n-nodes-webdecoy/issues)
 
