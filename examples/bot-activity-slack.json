@@ -1,0 +1,127 @@
+{
+	"name": "WebDecoy bot activity digest to Slack",
+	"nodes": [
+		{
+			"id": "schedule",
+			"name": "Every 15 minutes",
+			"type": "n8n-nodes-base.scheduleTrigger",
+			"typeVersion": 1.2,
+			"position": [0, 0],
+			"parameters": {
+				"rule": {
+					"interval": [
+						{
+							"field": "minutes",
+							"minutesInterval": 15
+						}
+					]
+				}
+			}
+		},
+		{
+			"id": "detections",
+			"name": "Recent bot detections",
+			"type": "n8n-nodes-webdecoy.webdecoy",
+			"typeVersion": 1,
+			"position": [240, 0],
+			"parameters": {
+				"resource": "detection",
+				"operation": "getMany",
+				"limit": 100,
+				"filters": {
+					"minScore": 70,
+					"since": "={{ $now.minus({minutes: 15}).toISO() }}",
+					"until": "={{ $now.toISO() }}"
+				}
+			}
+		},
+		{
+			"id": "digest",
+			"name": "Build activity digest",
+			"type": "n8n-nodes-base.code",
+			"typeVersion": 2,
+			"position": [480, 0],
+			"parameters": {
+				"jsCode": "const detections = $input.all();\nif (!detections.length) return [];\nreturn [{json: {text: `WebDecoy recorded ${detections.length} detection events scoring at least 70 in the previous 15-minute window${detections.length >= 100 ? ' (100-event limit reached)' : ''}. Review the evidence: https://app.webdecoy.com/detections`}}];"
+			}
+		},
+		{
+			"id": "slack",
+			"name": "Send digest to Slack",
+			"type": "n8n-nodes-base.slack",
+			"typeVersion": 2.3,
+			"position": [720, 0],
+			"parameters": {
+				"resource": "message",
+				"operation": "post",
+				"select": "channel",
+				"channelId": {
+					"__rl": true,
+					"value": "",
+					"mode": "id"
+				},
+				"messageType": "text",
+				"text": "={{ $json.text }}",
+				"otherOptions": {
+					"includeLinkToWorkflow": false
+				}
+			}
+		},
+		{
+			"id": "setup",
+			"name": "Setup",
+			"type": "n8n-nodes-base.stickyNote",
+			"typeVersion": 1,
+			"position": [-20, -300],
+			"parameters": {
+				"content": "## WebDecoy bot activity digest\nRequires the Automation Read API deployment and native WebDecoy node installation. Select a site-bound automation:read key, Slack credentials and a channel. Test manually before activating. This is a bounded digest: delayed events and volume above 100 can be missed; it is not an exactly-once alert stream.",
+				"width": 920,
+				"height": 220,
+				"color": 1
+			}
+		}
+	],
+	"connections": {
+		"Every 15 minutes": {
+			"main": [
+				[
+					{
+						"node": "Recent bot detections",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Recent bot detections": {
+			"main": [
+				[
+					{
+						"node": "Build activity digest",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Build activity digest": {
+			"main": [
+				[
+					{
+						"node": "Send digest to Slack",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		}
+	},
+	"active": false,
+	"settings": {
+		"executionOrder": "v1",
+		"saveDataSuccessExecution": "none",
+		"saveDataErrorExecution": "none",
+		"saveManualExecutions": false
+	},
+	"pinData": {}
+}

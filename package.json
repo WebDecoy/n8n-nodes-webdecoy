@@ -1,0 +1,51 @@
+{
+	"name": "n8n-nodes-webdecoy",
+	"version": "0.1.0",
+	"description": "Read WebDecoy AI and bot detection events and actor evidence in n8n workflows",
+	"license": "MIT",
+	"homepage": "https://webdecoy.com",
+	"keywords": [
+		"n8n-community-node-package"
+	],
+	"author": {
+		"name": "WebDecoy",
+		"email": "hello@webdecoy.com"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/WebDecoy/n8n-nodes-webdecoy.git"
+	},
+	"scripts": {
+		"build": "n8n-node build",
+		"build:watch": "tsc --watch",
+		"dev": "n8n-node dev",
+		"lint": "n8n-node lint",
+		"lint:fix": "n8n-node lint --fix",
+		"release": "n8n-node release",
+		"prepublishOnly": "n8n-node prerelease",
+		"test": "npm run build && node --test tests/*.test.cjs"
+	},
+	"files": [
+		"dist"
+	],
+	"n8n": {
+		"n8nNodesApiVersion": 1,
+		"strict": true,
+		"credentials": [
+			"dist/credentials/WebdecoyApi.credentials.js"
+		],
+		"nodes": [
+			"dist/nodes/Webdecoy/Webdecoy.node.js"
+		]
+	},
+	"devDependencies": {
+		"@n8n/node-cli": "0.57.4",
+		"eslint": "9.32.0",
+		"prettier": "3.6.2",
+		"release-it": "^21.1.0",
+		"typescript": "5.9.2"
+	},
+	"peerDependencies": {
+		"n8n-workflow": "*"
+	}
+}

@@ -1,0 +1,24 @@
+name: Publish
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  id-token: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: npm
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+      - name: Check API deployment
+        run: |
+          status=$(curl --silent --output /dev/null --write-out '%{http_code}' https://api.webdecoy.com/api/automation/v1/connection)
+          test "$status" = 401
+      - run: npm publish --access public --provenance
