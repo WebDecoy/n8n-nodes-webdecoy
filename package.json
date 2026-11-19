@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-webdecoy",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"description": "Read WebDecoy AI and bot detection events and actor evidence in n8n workflows",
 	"license": "MIT",
 	"homepage": "https://webdecoy.com",
@@ -23,10 +23,12 @@
 		"lint:fix": "n8n-node lint --fix",
 		"release": "n8n-node release",
 		"prepublishOnly": "n8n-node prerelease",
-		"test": "npm run build && node --test tests/*.test.cjs"
+		"test": "npm run build && node --test tests/*.test.cjs",
+		"check:package": "node scripts/check-package.cjs"
 	},
 	"files": [
-		"dist"
+		"dist/nodes",
+		"dist/credentials"
 	],
 	"n8n": {
 		"n8nNodesApiVersion": 1,

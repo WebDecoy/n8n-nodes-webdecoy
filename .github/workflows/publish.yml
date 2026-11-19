@@ -26,6 +26,7 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm test
+      - run: npm run check:package
       - name: Check API deployment
         run: |
           status=$(curl --silent --output /dev/null --write-out '%{http_code}' https://api.webdecoy.com/api/automation/v1/connection)

@@ -32,3 +32,6 @@ jobs:
 
       - name: Run build
         run: 'npm test'
+
+      - name: Check npm artifact
+        run: npm run check:package
